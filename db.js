@@ -3,7 +3,7 @@ const mysql = require('mysql');
 const inquirer = require('inquirer');
 
 const app = express();
-const PORT = 8080;
+const PORT = process.env.PORT || 8055;
 
 var connection = mysql.createConnection({
   host: "localhost",
@@ -17,22 +17,55 @@ var connection = mysql.createConnection({
   database: "employee_tracker_db"
 });
 
+
 connection.connect((err, res) => {
   if (err) throw err;
 
-  runApp();
+  inquirer
+  .prompt([
+    {
+      type: "list",
+      name: "task",
+      message: "Which task do you wish to perform today?",
+      choices: ["Add", "View", "Update", "Nevermind, I don't need to do anthing"]
+    }
+  ]).then(response => {
+    switch(true) {
+      case response.task === "Add":
+        console.log("lets add");
+        break;
+      case response.task === "View":
+        console.log("lets view");
+        break;
+      case response.task === "Update":
+        console.log("lets update");
+        break;
+      case response.task === "Nevermind, I don't need to do anthing":
+        console.log("Have a nice day!");
+        break;
+      default:
+        console.log("You gotta pick one!");
+    }
+  });
+
+  // runApp();
 });
 
-const runApp = (res) => {
-  console.log(`App is running on id: ${connection.threadId}`);
+// const runApp = (res) => {
+//   console.log(`App is running on id: ${connection.threadId}`);
 
-  connection.query(`SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name
-  FROM ((employee
-  INNER JOIN role ON employee.role_id = role.id)
-  INNER JOIN department ON role.department_id = department.id);`, (err, res) => {
-    if (err) throw err;
-    for (let i = 0; i < res.length; i++) {
-      console.log("Name: " + res[i].first_name + " " + res[i].last_name + " \nTitle: " + res[i].title);
-    }
-  })
-}
+//   connection.query(`SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name
+//   FROM ((employee
+//   INNER JOIN role ON employee.role_id = role.id)
+//   INNER JOIN department ON role.department_id = department.id);`, (err, res) => {
+//     if (err) throw err;
+//     for (let i = 0; i < res.length; i++) {
+//       console.log("Name: " + res[i].first_name + " " + res[i].last_name + " \nTitle: " + res[i].title);
+//     }
+//   })
+// };
+
+
+app.listen(PORT, err => {
+  console.log("App is listening on localhost: " + PORT);
+});
