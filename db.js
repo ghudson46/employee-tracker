@@ -21,13 +21,34 @@ var connection = mysql.createConnection({
 connection.connect((err, res) => {
   if (err) throw err;
 // asks the user what they want to do
+console.log(`
+
+
+/$$$$$$$$ /$$      /$$ /$$$$$$$  /$$        /$$$$$$  /$$     /$$/$$$$$$$$ /$$$$$$$$       /$$$$$$$$/$$$$$$$   /$$$$$$   /$$$$$$  /$$   /$$ /$$$$$$$$ /$$$$$$$ 
+| $$_____/| $$$    /$$$| $$__  $$| $$       /$$__  $$|  $$   /$$/ $$_____/| $$_____/      |__  $$__/ $$__  $$ /$$__  $$ /$$__  $$| $$  /$$/| $$_____/| $$__  $$
+| $$      | $$$$  /$$$$| $$  \\ $$| $$      | $$  \\ $$ \\  $$ /$$/| $$      | $$               | $$  | $$  \\ $$| $$  \\ $$| $$  \\__/| $$ /$$/ | $$      | $$  \\ $$
+| $$$$$   | $$ $$/$$ $$| $$$$$$$/| $$      | $$  | $$  \\  $$$$/ | $$$$$   | $$$$$            | $$  | $$$$$$$/| $$$$$$$$| $$      | $$$$$/  | $$$$$   | $$$$$$$/
+| $$__/   | $$  $$$| $$| $$____/ | $$      | $$  | $$   \\  $$/  | $$__/   | $$__/            | $$  | $$__  $$| $$__  $$| $$      | $$  $$  | $$__/   | $$__  $$
+| $$      | $$\\  $ | $$| $$      | $$      | $$  | $$    | $$   | $$      | $$               | $$  | $$  \\ $$| $$  | $$| $$    $$| $$\\  $$ | $$      | $$  \\ $$
+| $$$$$$$$| $$ \\/  | $$| $$      | $$$$$$$$|  $$$$$$/    | $$   | $$$$$$$$| $$$$$$$$         | $$  | $$  | $$| $$  | $$|  $$$$$$/| $$ \\  $$| $$$$$$$$| $$  | $$
+|________/|__/     |__/|__/      |________/ \\______/     |__/   |________/|________/         |__/  |__/  |__/|__/  |__/ \\______/ |__/  \\__/|________/|__/  |__/
+                                                                                                                                                               
+                                                                                                                                                               
+                                                                                                                                                               
+
+
+`);
+
+const runApp = () => {
+
+};
   inquirer
   .prompt([
     {
       type: "list",
       name: "task",
       message: "Which task do you wish to perform today?",
-      choices: ["Add", "View", "Update Employee Roles", "View entire company database"]
+      choices: ["Add", "View", "Update Employee Roles", "View entire company database", "All Done"]
     }
   ]).then(response => {
     // changes the follow up inquirer questions based on their original answer
@@ -175,7 +196,8 @@ connection.connect((err, res) => {
                 let manager = res.manager.slice(2);
                 let managerId = parseInt(res.manager.slice(0, 1));
 
-                console.log(`${employeeName} \n ${employeeRoleId} \n ${employeeRole} \n ${managerId} \n ${manager}`);
+                // console.log(`${employeeName} \n ${employeeRoleId} \n ${employeeRole} \n ${managerId} \n ${manager}`);
+                
 
                 connection.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES("${res.firstName}", "${res.lastName}", ${employeeRoleId}, ${managerId}) `, (err, res) => {
                   if (err) throw err;
@@ -289,18 +311,16 @@ connection.connect((err, res) => {
             })
         })
         break;
-      case response.task === "Nevermind, I don't need to do anthing":
+      case response.task === "All Done":
         console.log("Have a nice day!");
         break;
       default:
-        console.log("You gotta pick one!");
+        console.log("Please choose one of the selections");
     }
   });
 
 
 });
-
-
 
 
 app.listen(PORT, err => {
