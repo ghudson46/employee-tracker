@@ -54,7 +54,28 @@ connection.connect((err, res) => {
               choices: ["Department", "Role", "Employee"]
             }
           ]).then(response => {
-            console.log(response.select);
+            let query = response.select.toLowerCase();
+            connection.query("SELECT * FROM " + query, (err, res) => {
+              if (err) throw err;
+              
+              for (let i = 0; i < res.length; i++) {
+                switch (true) {
+                  case response.select === "Role":
+                    console.log(`id: ${res[i].id} | title: ${res[i].title} | salary: ${res[i].salary}`);
+                    break;
+                  case response.select === "Department":
+                    console.log(`id: ${res[i].id} | Department: ${res[i].name}`);
+                    break;
+                  case response.select === "Employee":
+                    console.log(`Role id: ${res[i].role_id} | Name: ${res[i].first_name} ${res[i].last_name}`);
+                    break;
+                  default:
+                    console.log("Uh oh, something went wrong!"); 
+                }
+                }
+    
+              }
+            ) 
           });
         break;
       case response.task === "Update":
