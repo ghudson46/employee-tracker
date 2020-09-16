@@ -32,13 +32,43 @@ connection.connect((err, res) => {
   ]).then(response => {
     switch(true) {
       case response.task === "Add":
-        console.log("lets add");
+        inquirer
+          .prompt([
+            {
+              type: "list",
+              name: "select",
+              message: "What do you want to add?",
+              choices: ["Department", "Role", "Employee"]
+            }
+          ]).then(response => {
+            console.log(response.select);
+          });
         break;
       case response.task === "View":
-        console.log("lets view");
+        inquirer
+          .prompt([
+            {
+              type: "list",
+              name: "select",
+              message: "What do you want to view?",
+              choices: ["Department", "Role", "Employee"]
+            }
+          ]).then(response => {
+            console.log(response.select);
+          });
         break;
       case response.task === "Update":
-        console.log("lets update");
+        inquirer
+          .prompt([
+            {
+              type: "list",
+              name: "select",
+              message: "What do you want to update?",
+              choices: ["Department", "Role", "Employee"]
+            }
+          ]).then(response => {
+            console.log(response.select);
+          });
         break;
       case response.task === "Nevermind, I don't need to do anthing":
         console.log("Have a nice day!");
