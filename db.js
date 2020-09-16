@@ -246,7 +246,19 @@ connection.connect((err, res) => {
               choices: ["Department", "Role", "Employee"]
             }
           ]).then(response => {
-            console.log(response.select);
+            switch (true) {
+              case response.select === "Department":
+                console.log(response.select);
+                break;
+                case response.select === "Role":
+                  console.log(response.select);
+                  break;
+                  case response.select === "Employee":
+                    console.log(response.select);
+                    break;
+                  default:
+                    console.log("Uh oh, something went wrong");
+            }
           });
         break;
       case response.task === "Nevermind, I don't need to do anthing":
