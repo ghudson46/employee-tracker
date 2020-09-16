@@ -52,7 +52,39 @@ connection.connect((err, res) => {
               choices: ["Department", "Role", "Employee"]
             }
           ]).then(response => {
-            console.log(response.select);
+            // let query = response.select.toLowerCase();
+            switch (true) {
+              case response.select === "Department":
+                inquirer
+              .prompt([
+                {
+                  type: "input",
+                  name: "newDepartment",
+                  message: "What is the name of your new department"
+                }
+              ]).then((res) => {
+                let newDepartment = res.newDepartment;
+                connection.query(`INSERT INTO department (name) VALUES("${newDepartment}") `, (err, res) => {
+                  if (err) throw err;
+                  console.log(`${newDepartment} added successfully!`);
+                  connection.query("SELECT * FROM department;", (err, res) => {
+                    if (err) throw err;
+                    for (let i = 0; i < res.length; i++) {
+                      console.log(`id: ${res[i].id} | department: ${res[i].name}`);
+                    }
+                  })
+                })
+              })
+                break;
+              case response.select === "Role":
+
+                break;
+              case response.select === "Employee":
+
+                break;
+              default:
+                console.log("Uh oh, something went wrong!");
+            }
           });
         break;
         // if the user chooses view
