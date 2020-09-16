@@ -39,6 +39,7 @@ connection.connect((err, res) => {
     for (let i = 0; i < res.length; i++) {
       console.log(`Name: ${res[i].first_name} ${res[i].last_name} | Title: ${res[i].title} | Department: ${res[i].name} | Salary: $${res[i].salary} \n`);
     }
+    console.log("=====================================================================================");
   })
       break;
       // if the user chooses adda
@@ -72,8 +73,10 @@ connection.connect((err, res) => {
                     for (let i = 0; i < res.length; i++) {
                       console.log(`id: ${res[i].id} | department: ${res[i].name}`);
                     }
+                    console.log("=====================================================================================");
                   })
                 })
+                console.log("=====================================================================================");
               })
                 break;
               case response.select === "Role":
@@ -122,13 +125,70 @@ connection.connect((err, res) => {
                     }
                   })
                 })
-                // gettting an error ("cannot access finalsalary" before initialization)
-
-                
               })
                 break;
               case response.select === "Employee":
+               let roleArray = [];
+               connection.query("SELECT id, title FROM role", (err, res) => {
+                 if (err) throw err;
 
+                 res.forEach((element) => {
+                   roleArray.push(`${element.id} ${element.title}`);
+                 });
+               });
+               let managerArray = [];
+               connection.query("SELECT id, name FROM manager", (err, res) => {
+                if (err) throw err;
+
+                res.forEach((element) => {
+                  managerArray.push(`${element.id} ${element.name}`);
+                });
+              });
+                inquirer
+                .prompt([
+                {
+                  type: "input",
+                  name: "firstName",
+                  message: "What is the first name of your new employee"
+                },
+                {
+                  type: "input",
+                  name: "lastName",
+                  message: "What is the last name of your new employee"
+                },
+                {
+                  type: "list",
+                  name: "role",
+                  message: "What is this employee's role?",
+                  choices: roleArray
+                },
+                {
+                  type: "list",
+                  name: "manager",
+                  message: "Who is this employee's manager?",
+                  choices: managerArray
+                }
+              ]).then((res) => {
+                let employeeName = res.firstName + " " + res.lastName;
+                let employeeRole = res.role.slice(2);
+                let employeeRoleId = parseInt(res.role.slice(0,1));
+                let manager = res.manager.slice(2);
+                let managerId = parseInt(res.manager.slice(0, 1));
+
+                console.log(`${employeeName} \n ${employeeRoleId} \n ${employeeRole} \n ${managerId} \n ${manager}`);
+
+                connection.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES("${res.firstName}", "${res.lastName}", ${employeeRoleId}, ${managerId}) `, (err, res) => {
+                  if (err) throw err;
+                  console.log(`${employeeName} (${employeeRole}) added successfully!`);
+                  connection.query("SELECT * FROM employee;", (err, res) => {
+                    if (err) throw err;
+                    for (let i = 0; i < res.length; i++) {
+                      console.log(`Name: ${res[i].first_name} ${res[i].last_name} | Role: ${res[i].role_id} | Manager: ${res[i].manager_id}`);
+                    }
+                    console.log("=====================================================================================");
+                  })
+                })
+              })
                 break;
               default:
                 console.log("Uh oh, something went wrong!");
@@ -155,15 +215,19 @@ connection.connect((err, res) => {
                 switch (true) {
                   case response.select === "Role":
                     console.log(`id: ${res[i].id} | title: ${res[i].title} | salary: ${res[i].salary}`);
+                    console.log("=====================================================================================");
                     break;
                   case response.select === "Department":
                     console.log(`id: ${res[i].id} | Department: ${res[i].name}`);
+                    console.log("=====================================================================================");
                     break;
                   case response.select === "Employee":
                     console.log(`Role id: ${res[i].role_id} | Name: ${res[i].first_name} ${res[i].last_name}`);
+                    console.log("=====================================================================================");
                     break;
                   default:
                     console.log("Uh oh, something went wrong!"); 
+                    console.log("=====================================================================================");
                 }
                 }
     
@@ -193,22 +257,10 @@ connection.connect((err, res) => {
     }
   });
 
-  // runApp();
+
 });
 
-// const runApp = (res) => {
-//   console.log(`App is running on id: ${connection.threadId}`);
 
-// connection.query(`SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name
-// FROM ((employee
-// INNER JOIN role ON employee.role_id = role.id)
-// INNER JOIN department ON role.department_id = department.id);`, (err, res) => {
-//   if (err) throw err;
-//   for (let i = 0; i < res.length; i++) {
-//     console.log("Name: " + res[i].first_name + " " + res[i].last_name + " \nTitle: " + res[i].title);
-//   }
-// })
-// };
 
 
 app.listen(PORT, err => {
