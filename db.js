@@ -103,23 +103,28 @@ connection.connect((err, res) => {
                   choices: departmentArray
                 }
               ]).then((res) => {
-                let newDepartment = res.newDepartment;
-                // connection.query(`INSERT INTO department (name) VALUES("${newDepartment}") `, (err, res) => {
-                //   if (err) throw err;
-                //   console.log(`${newDepartment} added successfully!`);
-                //   connection.query("SELECT * FROM department;", (err, res) => {
-                //     if (err) throw err;
-                //     for (let i = 0; i < res.length; i++) {
-                //       console.log(`id: ${res[i].id} | department: ${res[i].name}`);
-                //     }
-                //   })
-                // })
+                let newRole = res.newRole;
+                // salary without comma
                 let salary = res.salary;
-                let salaryFormatted = salary.replace(",", "");
+                var finalSalary = Number(salary.replace(/[^0-9\.-]+/g,""));
 
                 let department = res.departmentId;
-                let departmentName = department.slice(1);
-                console.log(`${res.newRole} ${salaryFormatted} ${departmentName}`);
+                // Id number for department_id
+                let departmentNumber = parseInt(department.slice(0, 2));
+
+                connection.query(`INSERT INTO role (title, salary, department_id) VALUES("${newRole}", ${finalSalary}, ${departmentNumber}) `, (err, res) => {
+                  if (err) throw err;
+                  console.log(`${newRole} added successfully!`);
+                  connection.query("SELECT * FROM role;", (err, res) => {
+                    if (err) throw err;
+                    for (let i = 0; i < res.length; i++) {
+                      console.log(`title: ${res[i].title} | salary: $${res[i].salary} | department ID: ${res[i].department_id}`);
+                    }
+                  })
+                })
+                // gettting an error ("cannot access finalsalary" before initialization)
+
+                
               })
                 break;
               case response.select === "Employee":
