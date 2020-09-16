@@ -20,17 +20,28 @@ var connection = mysql.createConnection({
 
 connection.connect((err, res) => {
   if (err) throw err;
-
+// asks the user what they want to do
   inquirer
   .prompt([
     {
       type: "list",
       name: "task",
       message: "Which task do you wish to perform today?",
-      choices: ["Add", "View", "Update", "Nevermind, I don't need to do anthing"]
+      choices: ["Add", "View", "Update", "View entire company database"]
     }
   ]).then(response => {
+    // changes the follow up inquirer questions based on their original answer
     switch(true) {
+      // if the user wants to view entire company database
+      case response.task === "View entire company database":
+        connection.query(`SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name FROM ((employee INNER JOIN role ON employee.role_id = role.id) INNER JOIN department ON role. department_id = department.id);`, (err, res) => {
+    if (err) throw err;
+    for (let i = 0; i < res.length; i++) {
+      console.log(`Name: ${res[i].first_name} ${res[i].last_name} | Title: ${res[i].title} | Department: ${res[i].name} | Salary: $${res[i].salary} \n`);
+    }
+  })
+      break;
+      // if the user chooses adda
       case response.task === "Add":
         inquirer
           .prompt([
@@ -44,6 +55,7 @@ connection.connect((err, res) => {
             console.log(response.select);
           });
         break;
+        // if the user chooses view
       case response.task === "View":
         inquirer
           .prompt([
@@ -53,6 +65,7 @@ connection.connect((err, res) => {
               message: "What do you want to view?",
               choices: ["Department", "Role", "Employee"]
             }
+            // pulls all information from mysql db based on the choice they selected in prompt
           ]).then(response => {
             let query = response.select.toLowerCase();
             connection.query("SELECT * FROM " + query, (err, res) => {
@@ -78,6 +91,7 @@ connection.connect((err, res) => {
             ) 
           });
         break;
+        // if the user chooses update
       case response.task === "Update":
         inquirer
           .prompt([
@@ -105,15 +119,15 @@ connection.connect((err, res) => {
 // const runApp = (res) => {
 //   console.log(`App is running on id: ${connection.threadId}`);
 
-//   connection.query(`SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name
-//   FROM ((employee
-//   INNER JOIN role ON employee.role_id = role.id)
-//   INNER JOIN department ON role.department_id = department.id);`, (err, res) => {
-//     if (err) throw err;
-//     for (let i = 0; i < res.length; i++) {
-//       console.log("Name: " + res[i].first_name + " " + res[i].last_name + " \nTitle: " + res[i].title);
-//     }
-//   })
+// connection.query(`SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name
+// FROM ((employee
+// INNER JOIN role ON employee.role_id = role.id)
+// INNER JOIN department ON role.department_id = department.id);`, (err, res) => {
+//   if (err) throw err;
+//   for (let i = 0; i < res.length; i++) {
+//     console.log("Name: " + res[i].first_name + " " + res[i].last_name + " \nTitle: " + res[i].title);
+//   }
+// })
 // };
 
 
