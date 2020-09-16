@@ -77,7 +77,50 @@ connection.connect((err, res) => {
               })
                 break;
               case response.select === "Role":
+                let departmentArray = [];
+                connection.query("SELECT * FROM department;", (err, res) => {
+                  if (err) throw err;
+                  res.forEach((element) => {
+                    departmentArray.push(`${element.id} ${element.name}`);
+                  });
+                })
+                inquirer
+                .prompt([
+                {
+                  type: "input",
+                  name: "newRole",
+                  message: "What is the title of your new role"
+                },
+                {
+                  type: "input",
+                  name: "salary",
+                  message: "What salary will be the salary of this new role?"
+                },
+                {
+                  type: "list",
+                  name: "departmentId",
+                  message: "What department is this role a part of?",
+                  choices: departmentArray
+                }
+              ]).then((res) => {
+                let newDepartment = res.newDepartment;
+                // connection.query(`INSERT INTO department (name) VALUES("${newDepartment}") `, (err, res) => {
+                //   if (err) throw err;
+                //   console.log(`${newDepartment} added successfully!`);
+                //   connection.query("SELECT * FROM department;", (err, res) => {
+                //     if (err) throw err;
+                //     for (let i = 0; i < res.length; i++) {
+                //       console.log(`id: ${res[i].id} | department: ${res[i].name}`);
+                //     }
+                //   })
+                // })
+                let salary = res.salary;
+                let salaryFormatted = salary.replace(",", "");
 
+                let department = res.departmentId;
+                let departmentName = department.slice(1);
+                console.log(`${res.newRole} ${salaryFormatted} ${departmentName}`);
+              })
                 break;
               case response.select === "Employee":
 
