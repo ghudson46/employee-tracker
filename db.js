@@ -27,7 +27,7 @@ connection.connect((err, res) => {
       type: "list",
       name: "task",
       message: "Which task do you wish to perform today?",
-      choices: ["Add", "View", "Update", "View entire company database"]
+      choices: ["Add", "View", "Update Employee Roles", "View entire company database"]
     }
   ]).then(response => {
     // changes the follow up inquirer questions based on their original answer
@@ -236,30 +236,58 @@ connection.connect((err, res) => {
           });
         break;
         // if the user chooses update
-      case response.task === "Update":
-        inquirer
-          .prompt([
-            {
-              type: "list",
-              name: "select",
-              message: "What do you want to update?",
-              choices: ["Department", "Role", "Employee"]
-            }
-          ]).then(response => {
-            switch (true) {
-              case response.select === "Department":
-                console.log(response.select);
-                break;
-                case response.select === "Role":
-                  console.log(response.select);
-                  break;
-                  case response.select === "Employee":
-                    console.log(response.select);
-                    break;
-                  default:
-                    console.log("Uh oh, something went wrong");
-            }
+      case response.task === "Update Employee Roles":
+        let employeeArray = [];
+        connection.query("SELECT * FROM employee;", (err, res) => {
+          if (err) throw err;
+          res.forEach((element) => {
+            employeeArray.push(`${element.id}) ${element.first_name} ${element.last_name}`);
           });
+          let roleArray = [];
+               connection.query("SELECT id, title FROM role", (err, res) => {
+                 if (err) throw err;
+
+                 res.forEach((element) => {
+                   roleArray.push(`${element.id}) ${element.title}`);
+                 });
+               });
+          inquirer
+            .prompt([
+              {
+                type: "list",
+                name: "employee",
+                message: "Which employee's role do you want to update?",
+                choices: employeeArray
+              },
+              {
+                type: "list",
+                name: "newRole",
+                message: "What is their new role?",
+                choices: roleArray
+              }
+            ]).then(result => {
+              let roleSplit = result.newRole.split(")");
+              let role = roleSplit[1];
+              let roleId = Number(roleSplit[0]);
+              let employeeSplit = result.employee.split(")");
+              let employeeName = employeeSplit[1];
+              let employeeId = Number(employeeSplit[0]);
+              
+              connection.query(`UPDATE employee SET role_id = ${roleId} WHERE id = ${employeeId};`, (err, res) => {
+                if (err) throw err;
+
+                console.log(`${employeeName} was successfully promoted to${role}!`);
+                console.log("===========================================================================");
+                connection.query(`SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name FROM ((employee INNER JOIN role ON employee.role_id = role.id) INNER JOIN department ON role. department_id = department.id);`, (err, res) => {
+                  if (err) throw err;
+                  for (let i = 0; i < res.length; i++) {
+                    console.log(`Name: ${res[i].first_name} ${res[i].last_name} | Title: ${res[i].title} | Department: ${res[i].name} | Salary: $${res[i].salary} \n`);
+                  }
+                  console.log("=====================================================================================");
+                })
+              })
+            })
+        })
         break;
       case response.task === "Nevermind, I don't need to do anthing":
         console.log("Have a nice day!");
