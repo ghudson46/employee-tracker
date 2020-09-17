@@ -1,6 +1,7 @@
 const express = require('express');
 const mysql = require('mysql');
 const inquirer = require('inquirer');
+require('console.table');
 
 const app = express();
 const PORT = process.env.PORT || 8055;
@@ -39,9 +40,6 @@ console.log(`
 
 `);
 
-const runApp = () => {
-
-};
   inquirer
   .prompt([
     {
@@ -58,7 +56,8 @@ const runApp = () => {
         connection.query(`SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name FROM ((employee INNER JOIN role ON employee.role_id = role.id) INNER JOIN department ON role. department_id = department.id);`, (err, res) => {
     if (err) throw err;
     for (let i = 0; i < res.length; i++) {
-      console.log(`Name: ${res[i].first_name} ${res[i].last_name} | Title: ${res[i].title} | Department: ${res[i].name} | Salary: $${res[i].salary} \n`);
+      // console.log(`Name: ${res[i].first_name} ${res[i].last_name} | Title: ${res[i].title} | Department: ${res[i].name} | Salary: $${res[i].salary} \n`);
+      console.table(res[i]);
     }
     console.log("=====================================================================================");
   })
@@ -92,12 +91,13 @@ const runApp = () => {
                   connection.query("SELECT * FROM department;", (err, res) => {
                     if (err) throw err;
                     for (let i = 0; i < res.length; i++) {
-                      console.log(`id: ${res[i].id} | department: ${res[i].name}`);
+                      // console.log(`id: ${res[i].id} | department: ${res[i].name}`);
+                      console.table(res[i]);
                     }
-                    console.log("=====================================================================================");
+                    
                   })
                 })
-                console.log("=====================================================================================");
+               
               })
                 break;
               case response.select === "Role":
@@ -142,7 +142,8 @@ const runApp = () => {
                   connection.query("SELECT * FROM role;", (err, res) => {
                     if (err) throw err;
                     for (let i = 0; i < res.length; i++) {
-                      console.log(`title: ${res[i].title} | salary: $${res[i].salary} | department ID: ${res[i].department_id}`);
+                      // console.log(`title: ${res[i].title} | salary: $${res[i].salary} | department ID: ${res[i].department_id}`);
+                      console.table(res[i]);
                     }
                   })
                 })
@@ -205,9 +206,10 @@ const runApp = () => {
                   connection.query("SELECT * FROM employee;", (err, res) => {
                     if (err) throw err;
                     for (let i = 0; i < res.length; i++) {
-                      console.log(`Name: ${res[i].first_name} ${res[i].last_name} | Role: ${res[i].role_id} | Manager: ${res[i].manager_id}`);
+                      // console.log(`Name: ${res[i].first_name} ${res[i].last_name} | Role: ${res[i].role_id} | Manager: ${res[i].manager_id}`);
+                      console.table(res[i]);
                     }
-                    console.log("=====================================================================================");
+                    
                   })
                 })
               })
@@ -236,20 +238,19 @@ const runApp = () => {
               for (let i = 0; i < res.length; i++) {
                 switch (true) {
                   case response.select === "Role":
-                    console.log(`id: ${res[i].id} | title: ${res[i].title} | salary: ${res[i].salary}`);
-                    console.log("=====================================================================================");
+                    // console.log(`id: ${res[i].id} | title: ${res[i].title} | salary: ${res[i].salary}`);
+                    console.table(res[i]);
                     break;
                   case response.select === "Department":
-                    console.log(`id: ${res[i].id} | Department: ${res[i].name}`);
-                    console.log("=====================================================================================");
+                    // console.log(`id: ${res[i].id} | Department: ${res[i].name}`);
+                    console.table(res[i]);
                     break;
                   case response.select === "Employee":
-                    console.log(`Role id: ${res[i].role_id} | Name: ${res[i].first_name} ${res[i].last_name}`);
-                    console.log("=====================================================================================");
+                    // console.log(`Role id: ${res[i].role_id} | Name: ${res[i].first_name} ${res[i].last_name}`);
+                    console.table(res[i]);
                     break;
                   default:
                     console.log("Uh oh, something went wrong!"); 
-                    console.log("=====================================================================================");
                 }
                 }
     
@@ -257,7 +258,7 @@ const runApp = () => {
             ) 
           });
         break;
-        // if the user chooses update
+        // if the user chooses update role
       case response.task === "Update Employee Roles":
         let employeeArray = [];
         connection.query("SELECT * FROM employee;", (err, res) => {
@@ -299,13 +300,13 @@ const runApp = () => {
                 if (err) throw err;
 
                 console.log(`${employeeName} was successfully promoted to${role}!`);
-                console.log("===========================================================================");
+                
                 connection.query(`SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name FROM ((employee INNER JOIN role ON employee.role_id = role.id) INNER JOIN department ON role. department_id = department.id);`, (err, res) => {
                   if (err) throw err;
                   for (let i = 0; i < res.length; i++) {
-                    console.log(`Name: ${res[i].first_name} ${res[i].last_name} | Title: ${res[i].title} | Department: ${res[i].name} | Salary: $${res[i].salary} \n`);
+                    // console.log(`Name: ${res[i].first_name} ${res[i].last_name} | Title: ${res[i].title} | Department: ${res[i].name} | Salary: $${res[i].salary} \n`);
+                    console.table(res[i]);
                   }
-                  console.log("=====================================================================================");
                 })
               })
             })
